@@ -1,0 +1,242 @@
+#include"cliente.cpp"
+#include"cliente.h"
+#include"venda.cpp"
+#include"venda.h"
+#include"produto.cpp"
+#include"produto.h"
+#include<iostream>
+#include<stdlib.h>
+#include<vector>
+
+using namespace std;
+
+int menuPrincipal()
+{
+    int operacao;
+
+    cout << "+====================+" << endl;
+    cout << "| MENU DE MANUTENCAO |" << endl;
+    cout << "+====================+" << endl;
+    cout << "| 1: Produto         |" << endl;
+    cout << "| 2: Cliente         |" << endl;
+    cout << "| 3: Excluir         |" << endl;
+    cout << "| 4: Alterar         |" << endl;
+    cout << "| 5: Sair            |" << endl;
+    cout << "+====================+" << endl;
+    cout << " Digite: ";
+    cin >> operacao;
+
+    return operacao;
+}
+
+int menuProduto()
+{
+    int operacao;
+
+    cout << "+====================+" << endl;
+    cout << "|  MENU DE PRODUTOS  |" << endl;
+    cout << "+====================+" << endl;
+    cout << "| 1: Cadastrar       |" << endl;
+    cout << "| 2: Consultar       |" << endl;
+    cout << "| 3: Excluir         |" << endl;
+    cout << "| 4: Alterar         |" << endl;
+    cout << "| 5: Voltar          |" << endl;
+    cout << "+====================+" << endl;
+    cout << " Digite: ";
+    cin >> operacao;
+
+    return operacao;
+}
+
+void manutencaoProduto()
+{
+    ArvoreProdutos arvoreProdutos;
+
+    int operacao = 0;
+
+    // Carregar dados do arquivo para a árvore
+    carregarArquivoParaArvore(arvoreProdutos, "produtos.txt");
+
+    while ((operacao = menuProduto()) != 5)
+    {
+        switch (operacao)
+        {
+        case 1:
+            // Cadastrar
+        {
+            Produto novoProduto(0, "", 0.0, 0.0, 0, 0);
+
+            cout << "Digite o codigo do produto: ";
+            int novoCodigo;
+            if (!(cin >> novoCodigo))
+            {
+                cerr << "Erro de entrada.\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
+            novoProduto.setCodigo(novoCodigo);
+
+            cout << "Escreva a descricao do produto: ";
+            string novaDescricao;
+            cin.ignore(); // Limpar a nova linha pendente
+            getline(cin, novaDescricao);
+            novoProduto.setDescricao(novaDescricao);
+
+            cout << "Digite o valor de compra do produto: ";
+            float novoValorCompra;
+            if (!(cin >> novoValorCompra))
+            {
+                cerr << "Erro de entrada.\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
+            novoProduto.setValorCompra(novoValorCompra);
+
+            cout << "Digite o valor de venda do produto: ";
+            float novoValorVenda;
+            if (!(cin >> novoValorVenda))
+            {
+                cerr << "Erro de entrada.\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
+            novoProduto.setValorVenda(novoValorVenda);
+
+            cout << "Digite a quantidade de estoque minima: ";
+            int novaQuantidadeMinima;
+            if (!(cin >> novaQuantidadeMinima))
+            {
+                cerr << "Erro de entrada.\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
+            novoProduto.setQuantidadeMinima(novaQuantidadeMinima);
+
+            cout << "Digite a quantidade de estoque: ";
+            int novaQuantidadeEstoque;
+            if (!(cin >> novaQuantidadeEstoque))
+            {
+                cerr << "Erro de entrada.\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
+            novoProduto.setQuantidadeEstoque(novaQuantidadeEstoque);
+
+            // Adicionar produto à árvore
+            novoProduto.adicionarNaArvore(arvoreProdutos);
+
+            // Salvar a árvore em um arquivo
+            arvoreProdutos.salvarEmArquivo("produtos.txt");
+        }
+        break;
+        case 2:
+            // Consultar produtos
+
+            /*
+                + Solicite o codigo para o usuario
+                - Caso encontre, mostre as informações
+                - Se não mostre um erro e retorne para o menu
+            */
+
+            consultarProduto(arvoreProdutos);
+
+            break;
+        case 3:
+            // Excluir produto
+            int aux;
+            /*
+                + Caso não encontre volte para o menu e mostre erro
+                + Verificar se o produto foi usado em alguma venda
+                - Se sim, não podera ser excluido
+                - Se não, exclua e retorne para o menu
+            */
+            cout<< "Informe o codigo do produto:";
+            cin>>aux;
+            break;
+        case 4:
+            // Alterar produto
+            /*
+                + Solicite o codigo para o usuario
+                - Caso exista, sobreponha os valores
+                - Caso não exista, retorne para o menu
+            */
+            break;
+        case 5:
+            // Voltar
+            break;
+        default:
+            // Tratamento de erro
+            break;
+        }
+    }
+}
+
+// Implemente as seguintes funções conforme necessário
+void manutencaoCliente()
+{
+    cout << "Função de manutenção de cliente.\n";
+}
+
+void realizarVenda()
+{
+    cout << "Função de realização de venda.\n";
+}
+
+void realizarConsulta()
+{
+    cout << "Função de realização de consulta.\n";
+}
+
+int main()
+{
+
+    setlocale(LC_ALL, "Portuguese");
+
+    int operacao;
+
+    do
+    {
+        operacao = menuPrincipal();
+
+        switch (operacao)
+        {
+        case 1:
+            // Menu do produto
+            manutencaoProduto();
+
+            break;
+        case 2:
+            // Menu do cliente
+            manutencaoCliente();
+
+            break;
+        case 3:
+            // Menu de vendas
+            realizarVenda();
+
+            break;
+        case 4:
+            // Consultas
+            realizarConsulta();
+
+            break;
+        case 5:
+            // Saindo do programa
+            cout << "Saindo do programa.\n";
+            break;
+        default:
+            // Tratamento de erro
+            cout << "Opção inválida. Tente novamente.\n";
+            break;
+        }
+    }
+    while (operacao != 5);
+
+    return 0;
+}
+
