@@ -79,36 +79,8 @@ private:
         return raiz;
     }
 
-    /*Nodo* removerProduto(Nodo* raiz, int codigo) {
-        if (raiz == nullptr) {
-            return raiz;
-        }
 
-        if (codigo < raiz->produto->getCodigo()) {
-            raiz->esquerdaPtr = removerProduto(raiz->esquerdaPtr, codigo);
-        } else if (codigo > raiz->produto->getCodigo()) {
-            raiz->direitaPtr = removerProduto(raiz->direitaPtr, codigo);
-        } else {
-            if (raiz->esquerdaPtr == nullptr) {
-                Nodo* temp = raiz->direitaPtr;
-                delete raiz;
-                return temp;
-            } else if (raiz->direitaPtr == nullptr) {
-                Nodo* temp = raiz->esquerdaPtr;
-                delete raiz;
-                return temp;
-            } else {
-                Nodo* temp = raiz->esquerdaPtr;
-                while (temp->direitaPtr != nullptr) {
-                    temp = temp->direitaPtr;
-                }
-                raiz->produto = temp->produto;
-                raiz->esquerdaPtr = removerProduto(raiz->esquerdaPtr, temp->produto->getCodigo());
-            }
-        }
-            return raiz;
-    }
-    */
+
 
     void salvarRecursivamente(const Nodo* raiz, std::ofstream& arquivo) const{
         if (raiz != nullptr){
@@ -130,25 +102,40 @@ private:
         }
     }
 
+     Nodo* removerProduto(Nodo* raiz, int codigo) {
+        if (raiz == nullptr) {
+            return raiz;
+        }
+
+        if (codigo < raiz->produto->getCodigo()) {
+            raiz->esquerdaPtr = removerProduto(raiz->esquerdaPtr, codigo);
+        } else if (codigo > raiz->produto->getCodigo()) {
+            raiz->direitaPtr = removerProduto(raiz->direitaPtr, codigo);
+        } else {
+            if (raiz->esquerdaPtr == nullptr) {
+                Nodo* temp = raiz->direitaPtr;
+                delete raiz;
+                return temp;
+            } else if (raiz->direitaPtr == nullptr) {
+                Nodo* temp = raiz->esquerdaPtr;
+                delete raiz;
+                return temp;
+            } else {
+                Nodo* temp = buscarProdutoRecursivamente(raiz->esquerdaPtr, codigo);
+                while (temp != nullptr && temp->direitaPtr != nullptr) {
+                    temp = temp->direitaPtr;
+                }
+                raiz->produto = temp->produto;
+                raiz->esquerdaPtr = removerProduto(raiz->esquerdaPtr, temp->produto->getCodigo());
+            }
+        }
+        return raiz;
+    }
+
 public:
     ArvoreProdutos() : raiz(nullptr) {}
 
-    /*void excluirProduto(ArvoreProdutos& arvore, int codigo) {
-        Produto* produto = arvore.buscarProdutoRecursivamente(codigo);
-        if (produto != nullptr) {
-            arvore.removerProduto(raiz,codigo);
-            std::ofstream arquivo("produtos.txt", std::ios::out | std::ios::trunc);
-            if (arquivo.is_open()) {
-                salvarRecursivamente(arvore.raiz, arquivo, codigo);
-                arquivo.close();
-            } else {
-                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
-            }
-        } else {
-            std::cout << "Produto não encontrado." << std::endl;
-        }
-    }
-    */
+
     void cadastrarProduto(Produto* novoProduto){
         raiz = inserirProduto(raiz, novoProduto);
     }
@@ -172,6 +159,22 @@ public:
         return (resultadoBusca != nullptr) ? resultadoBusca->produto : nullptr;
     }
 
+    void excluirProduto(ArvoreProdutos& arvore, int codigo) {
+    Produto* produto = arvore.buscarProduto(codigo);
+    if (produto != nullptr) {
+        arvore.raiz = arvore.removerProduto(arvore.raiz, codigo);
+        std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
+        if (arquivo.is_open()) {
+            arvore.salvarRecursivamente(arvore.raiz, arquivo);
+            arquivo.close();
+        } else {
+            std::cout << "NÃ£o foi possÃ­vel abrir o arquivo para escrita." << std::endl;
+        }
+    } else {
+        std::cout << "Produto nÃ£o encontrado." << std::endl;
+    }
+    }
+
 };
 
 void Produto::adicionarNaArvore(ArvoreProdutos& arvore){
@@ -189,10 +192,10 @@ void carregarArquivoParaArvore(ArvoreProdutos& arvoreProdutos, const std::string
         int quantidadeMinima, quantidadeEstoque;
 
         while (arquivo >> codigo >> descricao >> valorCompra >> valorVenda >> quantidadeMinima >> quantidadeEstoque){
-            // Criar um novo produto com as informações lidas do arquivo
+            // Criar um novo produto com as informaÃ§Ãµes lidas do arquivo
             Produto* novoProduto = new Produto(codigo, descricao, valorCompra, valorVenda, quantidadeMinima, quantidadeEstoque);
 
-            // Adicionar o produto à árvore
+            // Adicionar o produto Ã  Ã¡rvore
             arvoreProdutos.cadastrarProduto(novoProduto);
         }
 
@@ -204,32 +207,30 @@ void carregarArquivoParaArvore(ArvoreProdutos& arvoreProdutos, const std::string
 }
 
 void consultarProduto(ArvoreProdutos& arvore){
-    // Solicitar o código ao usuário
+    // Solicitar o cÃ³digo ao usuÃ¡rio
     int codigoConsulta;
-    cout << "Digite o código do produto a ser consultado: ";
+    cout << "Digite o cÃ³digo do produto a ser consultado: ";
     while (!(cin >> codigoConsulta) || cin.get() != '\n'){
-        cerr << "Entrada inválida. Digite um número válido: ";
+        cerr << "Entrada invÃ¡lida. Digite um nÃºmero vÃ¡lido: ";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
-    // Buscar o produto na árvore
+    // Buscar o produto na Ã¡rvore
     Produto* produtoEncontrado = arvore.buscarProduto(codigoConsulta);
 
     // Verificar se o produto foi encontrado
     if (produtoEncontrado != nullptr){
-        // Exibir informações do produto
-        cout << "Informações do Produto:\n";
-        cout << "Código: " << produtoEncontrado->getCodigo() << "\n";
-        cout << "Descrição: " << produtoEncontrado->getDescricao() << "\n";
+        // Exibir informaÃ§Ãµes do produto
+        cout << "InformaÃ§Ãµes do Produto:\n";
+        cout << "CÃ³digo: " << produtoEncontrado->getCodigo() << "\n";
+        cout << "DescriÃ§Ã£o: " << produtoEncontrado->getDescricao() << "\n";
         cout << "Valor de Compra: " << produtoEncontrado->getValorCompra() << "\n";
         cout << "Valor de Venda: " << produtoEncontrado->getValorVenda() << "\n";
-        cout << "Quantidade Mínima: " << produtoEncontrado->getQuantidadeMinima() << "\n";
+        cout << "Quantidade MÃ­nima: " << produtoEncontrado->getQuantidadeMinima() << "\n";
         cout << "Quantidade em Estoque: " << produtoEncontrado->getQuantidadeEstoque() << "\n";
     }else{
-        cerr << "Produto não encontrado.\n";
+        cerr << "Produto nÃ£o encontrado.\n";
     }
 }
-
-
 #endif // PRODUTO_H_INCLUDED
