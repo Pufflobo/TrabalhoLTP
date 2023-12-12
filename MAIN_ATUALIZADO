@@ -157,6 +157,9 @@ void manutencaoProduto()
             */
             cout<< "Informe o codigo do produto:";
             cin>>aux;
+
+            arvoreProdutos.excluirProduto(arvoreProdutos,aux);
+
             break;
         case 4:
             // Alterar produto
@@ -239,4 +242,3 @@ int main()
 
     return 0;
 }
-
