@@ -9,25 +9,38 @@
 
 using namespace std;
 
+class ArvoreClientes;
+
+void carregarArquivoParaArvore(ArvoreClientes& arvoreClientes, const string& nomeArquivo);
+
 class Cliente{
     public:
         Cliente(int cl, bool inp, string n, string c, string t, string e);//construtor
         void verifica(bool inp);
-
+        void adicionarNaArvore(ArvoreClientes& arvore);
         //set´s
         void setnome(string n);
         void setendereco(string e);
         void settel(string t);
         void setcpf(string c);
-        void setcod(int cl);
+        void setcodigo(int cl);
         void setcodinp(bool inp);
         //get´s
         string getnome();
         string getendereco();
         string gettel();
         string getcpf();
-        int getcod();
+        int getcodigo();
         bool getcodinp();
+        void salvarEmArquivo(ofstream& arquivo){
+            arquivo << getnome() << ""
+                    << getendereco() << ""
+                    << gettel() << ""
+                    << getcpf() << ""
+                    << getcodigo() << ""
+                    << getcodinp() << "/n";
+
+        }
 
     private:
         string tel;
@@ -56,24 +69,24 @@ private:
             return new Nodo(novoCliente);
         }
 
-        if (novoCliente->getcod() < raiz->cliente->getcod())
+        if (novoCliente->getcodigo() < raiz->cliente->getcodigo())
         {
             raiz->esquerdaPtr = inserirCliente(raiz->esquerdaPtr, novoCliente);
-        }else if (novoCliente->getcod() > raiz->cliente->getcod()){
+        }else if (novoCliente->getcodigo() > raiz->cliente->getcodigo()){
             raiz->direitaPtr = inserirCliente(raiz->direitaPtr, novoCliente);
         }
         return raiz;
     }
 
-    /*Nodo* removerProduto(Nodo* raiz, int codigo) {
+    Nodo* removerCliente(Nodo* raiz, int codigo) {
         if (raiz == nullptr) {
             return raiz;
         }
 
-        if (codigo < raiz->produto->getCodigo()) {
-            raiz->esquerdaPtr = removerProduto(raiz->esquerdaPtr, codigo);
-        } else if (codigo > raiz->produto->getCodigo()) {
-            raiz->direitaPtr = removerProduto(raiz->direitaPtr, codigo);
+        if (codigo < raiz->cliente->getcodigo()) {
+            raiz->esquerdaPtr = removerCliente(raiz->esquerdaPtr, codigo);
+        } else if (codigo > raiz->cliente->getcodigo()) {
+            raiz->direitaPtr = removerCliente(raiz->direitaPtr, codigo);
         } else {
             if (raiz->esquerdaPtr == nullptr) {
                 Nodo* temp = raiz->direitaPtr;
@@ -88,13 +101,13 @@ private:
                 while (temp->direitaPtr != nullptr) {
                     temp = temp->direitaPtr;
                 }
-                raiz->produto = temp->produto;
-                raiz->esquerdaPtr = removerProduto(raiz->esquerdaPtr, temp->produto->getCodigo());
+                raiz->cliente = temp->cliente;
+                raiz->esquerdaPtr = removerCliente(raiz->esquerdaPtr, temp->cliente->getcodigo());
             }
         }
             return raiz;
     }
-    */
+
 
     void salvarRecursivamente(const Nodo* raiz, std::ofstream& arquivo) const{
         if (raiz != nullptr){
@@ -105,37 +118,22 @@ private:
     }
 
     Nodo* buscarClientesRecursivamente(Nodo* raiz, int codigo) const{
-        if (raiz == nullptr || raiz->cliente->getcod() == codigo){
+        if (raiz == nullptr || raiz->cliente->getcodigo() == codigo){
             return raiz;
         }
 
-        if (codigo < raiz->cliente->getcod()){
-            return buscarClienteRecursivamente(raiz->esquerdaPtr, codigo);
+        if (codigo < raiz->cliente->getcodigo()){
+            return buscarClientesRecursivamente(raiz->esquerdaPtr, codigo);
         }else{
-            return buscarClienteRecursivamente(raiz->direitaPtr, codigo);
+            return buscarClientesRecursivamente(raiz->direitaPtr, codigo);
         }
     }
 
 public:
     ArvoreClientes() : raiz(nullptr) {}
 
-    /*void excluirProduto(ArvoreProdutos& arvore, int codigo) {
-        Produto* produto = arvore.buscarProdutoRecursivamente(codigo);
-        if (produto != nullptr) {
-            arvore.removerProduto(raiz,codigo);
-            std::ofstream arquivo("produtos.txt", std::ios::out | std::ios::trunc);
-            if (arquivo.is_open()) {
-                salvarRecursivamente(arvore.raiz, arquivo, codigo);
-                arquivo.close();
-            } else {
-                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
-            }
-        } else {
-            std::cout << "Produto não encontrado." << std::endl;
-        }
-    }
-    */
-    void cadastrarCliente(Produto* novoCliente){
+
+    void cadastrarCliente(Cliente* novoCliente){
         raiz = inserirCliente(raiz, novoCliente);
     }
 
@@ -153,19 +151,34 @@ public:
         }
     }
 
-    Produto* buscarCliente(int codigo) const{
+    Cliente* buscarCliente(int codigo) const{
         Nodo* resultadoBusca = buscarClientesRecursivamente(raiz, codigo);
         return (resultadoBusca != nullptr) ? resultadoBusca->cliente : nullptr;
     }
 
+    void excluirCliente(ArvoreClientes& arvore, int codigo) {
+        Cliente* cliente = arvore.buscarCliente(codigo);
+        if (cliente != nullptr) {
+            arvore.raiz = arvore.removerCliente(arvore.raiz , codigo);
+            std::ofstream arquivo("clientes.txt", std::ios::out | std::ios::trunc);
+            if (arquivo.is_open()) {
+                arvore.salvarRecursivamente(arvore.raiz, arquivo);
+                arquivo.close();
+            } else {
+                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+            }
+        } else {
+            std::cout << "Cliente não encontrado." << std::endl;
+        }
+    }
 };
 
-void Produto::adicionarNaArvore(ArvoreClientes& arvore){
+void Cliente::adicionarNaArvore(ArvoreClientes& arvore){
     Cliente* novoCliente = new Cliente(*this);
     arvore.cadastrarCliente(novoCliente);
 }
 
-void carregarArquivoParaArvore(ArvoreProdutos& arvoreProdutos, const std::string& nomeArquivo){
+void carregarArquivoParaArvore(ArvoreClientes& arvoreClientes, const std::string& nomeArquivo){
     std::ifstream arquivo(nomeArquivo, ios::binary);
 
     if (arquivo.is_open()){
@@ -173,12 +186,12 @@ void carregarArquivoParaArvore(ArvoreProdutos& arvoreProdutos, const std::string
         int codCl;
         bool codInp;
 
-        while (arquivo >> tel >> endereco >> nome >> cpf >> codCl >> codInp){
+        while (arquivo >> codCl >> codInp >> nome >>  cpf >> tel >> endereco){
             // Criar um novo produto com as informações lidas do arquivo
-            Clinete* novoCliente = new Cliente(tel, endereco, nome, cpf, codCl, codInp);
+            Cliente* novoCliente = new Cliente(codCl, codInp, nome, cpf, tel, endereco);
 
             // Adicionar o produto à árvore
-            arvoreProdutos.cadastrarCliente(novoCliente);
+            arvoreClientes.cadastrarCliente(novoCliente);
         }
 
         arquivo.close();
@@ -199,27 +212,27 @@ void consultarCliente(ArvoreClientes& arvore){
     }
 
     // Buscar o produto na árvore
-    Produto* produtoEncontrado = arvore.buscarCliente(codigoConsulta);
+    Cliente* clienteEncontrado = arvore.buscarCliente(codigoConsulta);
 
     // Verificar se o produto foi encontrado
     if (clienteEncontrado != nullptr){
         // Exibir informações do produto
         cout << "Informações do Cliente:\n";
-        cout << "Código: " << clienteEncontrado->getcod() << "\n";
+        cout << "Código: " << clienteEncontrado->getcodigo() << "\n";
         cout << "Nome: " << clienteEncontrado->getnome() << "\n";
         cout << "Cpf: " << clienteEncontrado->getcpf() << "\n";
         cout << "Telefone: " << clienteEncontrado->gettel() << "\n";
         cout << "Endereco: " << clienteEncontrado->getendereco() << "\n";
-        
+
         cout << "Condicao de venda a prazo: ";
         if(clienteEncontrado->getcodinp()!=0)
         cout<<"endividado\n";
         else
         cout<<"nao endividado\n";
-        
-            
+
+
     }else{
-        cerr << "Produto não encontrado.\n";
+        cerr << "Cliente não encontrado.\n";
     }
 }
 
