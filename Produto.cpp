@@ -13,7 +13,7 @@ Produto::Produto(int c, string d, float compra, float venda, int qtd, int qmn){
     quantidademinima = qmn;
 }
 
-//set´s
+//setÂ´s
 void Produto::setCodigo(int cod){
     codigo = cod;
 }
@@ -21,7 +21,7 @@ void Produto::setQuantidadeEstoque(int qtd){
      quantidadeestoque = qtd;
 }
 void Produto::setQuantidadeMinima(int qmn){
-    quantidadeestoque = qmn;
+    quantidademinima = qmn;
 }
 void Produto::setValorVenda(float v){
     valorvenda = v;
@@ -33,7 +33,7 @@ void Produto::setDescricao(string d){
     descricao = d;
 }
 
-//get´s
+//getÂ´s
 int Produto::getCodigo(){
     return codigo;
 }
