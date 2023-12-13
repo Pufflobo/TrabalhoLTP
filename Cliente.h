@@ -34,11 +34,11 @@ class Cliente{
         bool getcodinp();
         void salvarEmArquivo(ofstream& arquivo){
             arquivo << getnome() << ""
-                    << getendereco() << ""
-                    << gettel() << ""
-                    << getcpf() << ""
-                    << getcodigo() << ""
-                    << getcodinp() << "/n";
+                    << getendereco() << " "
+                    << gettel() << " "
+                    << getcpf() << " "
+                    << getcodigo() << " "
+                    << getcodinp() << "\n";
 
         }
 
