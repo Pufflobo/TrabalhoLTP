@@ -135,7 +135,6 @@ private:
 public:
     ArvoreProdutos() : raiz(nullptr) {}
 
-
     void cadastrarProduto(Produto* novoProduto){
         raiz = inserirProduto(raiz, novoProduto);
     }
@@ -174,6 +173,120 @@ public:
         std::cout << "Produto não encontrado." << std::endl;
     }
     }
+
+    void produtoAltera(ArvoreProdutos& arvoreProdutos) {
+    int cod;
+
+    cout << "Informe o codigo do produto a ser alterado: ";
+    cin >> cod;
+
+    Produto* produto = arvoreProdutos.buscarProduto(cod);
+
+    if (produto->getCodigo() != -1) {
+        cout << "Produto encontrado:\n";
+        cout << "Codigo: " << produto->getCodigo() << endl;
+        cout << "Descricao atual: " << produto->getDescricao() << endl;
+        cout << "Estoque atual:" << produto->getQuantidadeEstoque() <<endl;
+
+        int operacao;
+        cout << "+====================+" << endl;
+        cout << "| MENU DE ALTERACAO  |" << endl;
+        cout << "+====================+" << endl;
+        cout << "| 1: DESCRICAO       |" << endl;
+        cout << "| 2: PRECO           |" << endl;
+        cout << "| 3: VALOR DE COMPRA |" << endl;
+        cout << "| 4: ESTOQUE         |" << endl;
+        cout << "| 5: ESTOQUE MINIMO  |" << endl;
+        cout << "| 6: SAIR            |" << endl;
+        cout << "+====================+" << endl;
+        cout << " Digite: ";
+        cin >> operacao;
+
+        switch(operacao){
+        case 1:{
+            cout << "Digite a nova descricao do produto: ";
+            string novaDescricao;
+            cin >> novaDescricao;
+            produto->setDescricao(novaDescricao);
+            std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
+            if (arquivo.is_open()) {
+                arvoreProdutos.salvarRecursivamente(arvoreProdutos.raiz, arquivo);
+                arquivo.close();
+            } else {
+                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+            }
+
+            break;
+        }
+
+        case 2:{
+            cout << "Digite o novo preco do produto: ";
+            float novoValorVenda;
+            cin >> novoValorVenda;
+            produto->setValorVenda(novoValorVenda);
+            std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
+            if (arquivo.is_open()) {
+                arvoreProdutos.salvarRecursivamente(arvoreProdutos.raiz, arquivo);
+                arquivo.close();
+            } else {
+                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+            }
+            break;
+        }
+        case 3:{
+            cout << "Digite o novo valor de compra do produto: ";
+            float novoValorCompra;
+            cin >> novoValorCompra;
+            produto->setValorCompra(novoValorCompra);
+            std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
+            if (arquivo.is_open()) {
+                arvoreProdutos.salvarRecursivamente(arvoreProdutos.raiz, arquivo);
+                arquivo.close();
+            } else {
+                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+            }
+
+            break;
+        }
+
+        case 4:{
+            cout << "Digite a nova quantidade em estoque do produto: ";
+            int novoQuantidadeEstoque;
+            cin >> novoQuantidadeEstoque;
+            produto->setQuantidadeEstoque(novoQuantidadeEstoque);
+            std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
+            if (arquivo.is_open()) {
+                arvoreProdutos.salvarRecursivamente(arvoreProdutos.raiz, arquivo);
+                arquivo.close();
+            } else {
+                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+            }
+            break;
+        }
+
+        case 5:{
+            cout << "Digite a nova quantidade minima em estoque do produto: ";
+            int novoQuantidadeMinima;
+            cin >> novoQuantidadeMinima;
+            produto->setQuantidadeMinima(novoQuantidadeMinima);
+            std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
+            if (arquivo.is_open()) {
+                arvoreProdutos.salvarRecursivamente(arvoreProdutos.raiz, arquivo);
+                arquivo.close();
+            } else {
+                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+            }
+            break;
+        }
+
+        case 6:
+            break;
+        }
+        cout << "Produto alterado com sucesso!\n";
+    } else {
+        cout << "Produto nao encontrado!\n";
+    }
+}
 
 };
 
@@ -233,5 +346,7 @@ void consultarProduto(ArvoreProdutos& arvore){
         cerr << "Produto não encontrado.\n";
     }
 }
-#endif // PRODUTO_H_INCLUDED
 
+
+
+#endif // PRODUTO_H_INCLUDED
