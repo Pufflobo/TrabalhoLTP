@@ -164,6 +164,7 @@ void manutencaoProduto()
                 - Caso exista, sobreponha os valores
                 - Caso não exista, retorne para o menu
             */
+            arvoreProdutos.produtoAltera(arvoreProdutos);
             break;
         case 5:
             // Voltar
@@ -255,7 +256,7 @@ void manutencaoCliente()
 
             cout << "Escreva o endereco do cliente: ";
             string novoEndereco;
-            if (!(cin >> novoTelefone))
+            if (!(cin >> novoEndereco))
             {
                 cerr << "Erro de entrada.\n";
                 cin.clear();
@@ -295,7 +296,7 @@ void manutencaoCliente()
                 - Se não, exclua e retorne para o menu
             */
             cout<< "Informe o codigo do cliente:";
-            cin>>aux;
+            cin>>aux1;
 
             arvoreClientes.excluirCliente(arvoreClientes,aux);
 
@@ -307,6 +308,7 @@ void manutencaoCliente()
                 - Caso exista, sobreponha os valores
                 - Caso não exista, retorne para o menu
             */
+            arvoreClientes.clienteAltera(arvoreClientes);
             break;
         case 5:
             // Voltar
