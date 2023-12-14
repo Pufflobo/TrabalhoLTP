@@ -21,7 +21,7 @@ void Produto::setQuantidadeEstoque(int qtd){
      quantidadeestoque = qtd;
 }
 void Produto::setQuantidadeMinima(int qmn){
-    quantidademinima = qmn;
+    quantidadeestoque = qmn;
 }
 void Produto::setValorVenda(float v){
     valorvenda = v;
