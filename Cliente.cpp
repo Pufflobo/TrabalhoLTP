@@ -17,13 +17,13 @@ void Cliente::verifica(bool inp){
     if(inp == true){
         cout<<"O cliente possui pagamentos pendentes, compra a prazo bloqueada";
     }else{
-        cout<<"O cliente não possui dividas, compra a prazo liberada";
+        cout<<"O cliente nÃ£o possui dividas, compra a prazo liberada";
     }
 }
 
 
 
-//set´s modificarão os valores privados
+//setÂ´s modificarÃ£o os valores privados
 void Cliente::setnome(string n){
     nome = n;
 }
@@ -36,14 +36,14 @@ void Cliente::settel(string t){
 void Cliente::setcpf(string c){
     cpf = c;
 }
-void Cliente::setcod(int cl){
+void Cliente::setcodigo(int cl){
     codCl = cl;
 }
 void Cliente::setcodinp(bool inp){
     codInp = inp;
 }
 
-//get´s retornarão os valores privados
+//getÂ´s retornarÃ£o os valores privados
 string Cliente::getnome(){
     return nome;
 }
@@ -56,12 +56,9 @@ string Cliente::gettel(){
 string Cliente::getcpf(){
     return cpf;
 }
-int Cliente::getcod(){
+int Cliente::getcodigo(){
     return codCl;
 }
 bool Cliente::getcodinp(){
     return codInp;
 }
-
-
-
