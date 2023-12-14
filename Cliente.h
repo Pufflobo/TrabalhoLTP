@@ -1,5 +1,5 @@
-#ifndef PRODUTO_H_INCLUDED
-#define PRODUTO_H_INCLUDED
+#ifndef CLIENTE_H_INCLUDED
+#define CLIENTE_H_INCLUDED
 #include<iostream>
 #include<string>
 #include <fstream>
@@ -9,108 +9,84 @@
 
 using namespace std;
 
-class ArvoreProdutos;
-void carregarArquivoParaArvore(ArvoreProdutos& arvoreProdutos, const std::string& nomeArquivo);
+class ArvoreClientes;
 
+void carregarArquivoParaArvore(ArvoreClientes& arvoreClientes, const string& nomeArquivo);
 
-class Produto{
-public:
-    Produto(int cod, string d,float compra, float venda, int qtd, int qmn);
+class Cliente{
+    public:
+        Cliente(int cl, bool inp, string n, string c, string t, string e);//construtor
+        void verifica(bool inp);
+        void adicionarNaArvore(ArvoreClientes& arvore);
+        //set´s
+        void setnome(string n);
+        void setendereco(string e);
+        void settel(string t);
+        void setcpf(string c);
+        void setcodigo(int cl);
+        void setcodinp(bool inp);
+        //get´s
+        string getnome();
+        string getendereco();
+        string gettel();
+        string getcpf();
+        int getcodigo();
+        bool getcodinp();
+        void salvarEmArquivo(ofstream& arquivo){
+            arquivo << getnome() << " "
+                    << getendereco() << " "
+                    << gettel() << " "
+                    << getcpf() << " "
+                    << getcodigo() << " "
+                    << getcodinp() << "\n";
 
-    void adicionarNaArvore(ArvoreProdutos& arvore);
+        }
 
-    void setCodigo(int cod);
-    void setQuantidadeEstoque(int qtd);
-    void setQuantidadeMinima(int qmn);
-    void setValorVenda(float v);
-    void setValorCompra(float c);
-    void setDescricao(string d);
-
-    int getCodigo();
-    int getQuantidadeEstoque();
-    int getQuantidadeMinima();
-    float getValorVenda();
-    float getValorCompra();
-    string getDescricao();
-
-     void salvarEmArquivo(std::ofstream& arquivo)
-    {
-        arquivo << getCodigo() << " "
-                << getDescricao() << " "
-                << getValorCompra() << " "
-                << getValorVenda() << " "
-                << getQuantidadeMinima() << " "
-                << getQuantidadeEstoque() << "\n";
-    }
-
-private:
-    int codigo;
-    float valorcompra;
-    float valorvenda;
-    string descricao;
-    int quantidademinima;
-    int quantidadeestoque;
+    private:
+        string tel;
+        string endereco;
+        string nome;
+        string cpf;
+        int codCl;
+        bool codInp;
 };
 
-class ArvoreProdutos
+class ArvoreClientes
 {
 private:
     struct Nodo{
-        Produto* produto;
+        Cliente* cliente;
         Nodo* esquerdaPtr;
         Nodo* direitaPtr;
 
-        Nodo(Produto* produto) : produto(produto), esquerdaPtr(nullptr), direitaPtr(nullptr) {}
+        Nodo(Cliente* cliente) : cliente(cliente), esquerdaPtr(nullptr), direitaPtr(nullptr) {}
     };
 
     Nodo* raiz;
 
-    Nodo* inserirProduto(Nodo* raiz, Produto* novoProduto){
+    Nodo* inserirCliente(Nodo* raiz, Cliente* novoCliente){
         if (raiz == nullptr){
-            return new Nodo(novoProduto);
+            return new Nodo(novoCliente);
         }
 
-        if (novoProduto->getCodigo() < raiz->produto->getCodigo())
+        if (novoCliente->getcodigo() < raiz->cliente->getcodigo())
         {
-            raiz->esquerdaPtr = inserirProduto(raiz->esquerdaPtr, novoProduto);
-        }else if (novoProduto->getCodigo() > raiz->produto->getCodigo()){
-            raiz->direitaPtr = inserirProduto(raiz->direitaPtr, novoProduto);
+            raiz->esquerdaPtr = inserirCliente(raiz->esquerdaPtr, novoCliente);
+        }else if (novoCliente->getcodigo() > raiz->cliente->getcodigo()){
+            raiz->direitaPtr = inserirCliente(raiz->direitaPtr, novoCliente);
         }
         return raiz;
     }
 
-
-
-
-    void salvarRecursivamente(const Nodo* raiz, std::ofstream& arquivo) const{
-        if (raiz != nullptr){
-            raiz->produto->salvarEmArquivo(arquivo);
-            salvarRecursivamente(raiz->esquerdaPtr, arquivo);
-            salvarRecursivamente(raiz->direitaPtr, arquivo);
-        }
-    }
-
-    Nodo* buscarProdutoRecursivamente(Nodo* raiz, int codigo) const{
-        if (raiz == nullptr || raiz->produto->getCodigo() == codigo){
-            return raiz;
-        }
-
-        if (codigo < raiz->produto->getCodigo()){
-            return buscarProdutoRecursivamente(raiz->esquerdaPtr, codigo);
-        }else{
-            return buscarProdutoRecursivamente(raiz->direitaPtr, codigo);
-        }
-    }
-
-     Nodo* removerProduto(Nodo* raiz, int codigo) {
+    Nodo* removerCliente(Nodo* raiz, int codigo) {
         if (raiz == nullptr) {
             return raiz;
         }
 
-        if (codigo < raiz->produto->getCodigo()) {
-            raiz->esquerdaPtr = removerProduto(raiz->esquerdaPtr, codigo);
-        } else if (codigo > raiz->produto->getCodigo()) {
-            raiz->direitaPtr = removerProduto(raiz->direitaPtr, codigo);
+        if (codigo < raiz->cliente->getcodigo()) {
+            raiz->esquerdaPtr = removerCliente(raiz->esquerdaPtr, codigo);
+        } else if (codigo > raiz->cliente->getcodigo()) {
+            raiz->direitaPtr = removerCliente(raiz->direitaPtr, codigo);
         } else {
             if (raiz->esquerdaPtr == nullptr) {
                 Nodo* temp = raiz->direitaPtr;
@@ -121,22 +97,44 @@ private:
                 delete raiz;
                 return temp;
             } else {
-                Nodo* temp = buscarProdutoRecursivamente(raiz->esquerdaPtr, codigo);
-                while (temp != nullptr && temp->direitaPtr != nullptr) {
+                Nodo* temp = raiz->esquerdaPtr;
+                while (temp->direitaPtr != nullptr) {
                     temp = temp->direitaPtr;
                 }
-                raiz->produto = temp->produto;
-                raiz->esquerdaPtr = removerProduto(raiz->esquerdaPtr, temp->produto->getCodigo());
+                raiz->cliente = temp->cliente;
+                raiz->esquerdaPtr = removerCliente(raiz->esquerdaPtr, temp->cliente->getcodigo());
             }
         }
-        return raiz;
+            return raiz;
+    }
+
+
+    void salvarRecursivamente(const Nodo* raiz, std::ofstream& arquivo) const{
+        if (raiz != nullptr){
+            raiz->cliente->salvarEmArquivo(arquivo);
+            salvarRecursivamente(raiz->esquerdaPtr, arquivo);
+            salvarRecursivamente(raiz->direitaPtr, arquivo);
+        }
+    }
+
+    Nodo* buscarClientesRecursivamente(Nodo* raiz, int codigo) const{
+        if (raiz == nullptr || raiz->cliente->getcodigo() == codigo){
+            return raiz;
+        }
+
+        if (codigo < raiz->cliente->getcodigo()){
+            return buscarClientesRecursivamente(raiz->esquerdaPtr, codigo);
+        }else{
+            return buscarClientesRecursivamente(raiz->direitaPtr, codigo);
+        }
     }
 
 public:
-    ArvoreProdutos() : raiz(nullptr) {}
+    ArvoreClientes() : raiz(nullptr) {}
 
-    void cadastrarProduto(Produto* novoProduto){
-        raiz = inserirProduto(raiz, novoProduto);
+
+    void cadastrarCliente(Cliente* novoCliente){
+        raiz = inserirCliente(raiz, novoCliente);
     }
 
     void salvarEmArquivo(const std::string& nomeArquivo) const{
@@ -153,163 +151,176 @@ public:
         }
     }
 
-    Produto* buscarProduto(int codigo) const{
-        Nodo* resultadoBusca = buscarProdutoRecursivamente(raiz, codigo);
-        return (resultadoBusca != nullptr) ? resultadoBusca->produto : nullptr;
+    Cliente* buscarCliente(int codigo) const{
+        Nodo* resultadoBusca = buscarClientesRecursivamente(raiz, codigo);
+        return (resultadoBusca != nullptr) ? resultadoBusca->cliente : nullptr;
     }
 
-    void excluirProduto(ArvoreProdutos& arvore, int codigo) {
-    Produto* produto = arvore.buscarProduto(codigo);
-    if (produto != nullptr) {
-        arvore.raiz = arvore.removerProduto(arvore.raiz, codigo);
-        std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
-        if (arquivo.is_open()) {
-            arvore.salvarRecursivamente(arvore.raiz, arquivo);
-            arquivo.close();
+    void excluirCliente(ArvoreClientes& arvore, int codigo) {
+        Cliente* cliente = arvore.buscarCliente(codigo);
+        if (cliente != nullptr) {
+            arvore.raiz = arvore.removerCliente(arvore.raiz , codigo);
+            std::ofstream arquivo("clientes.txt", std::ios::out | std::ios::trunc);
+            if (arquivo.is_open()) {
+                arvore.salvarRecursivamente(arvore.raiz, arquivo);
+                arquivo.close();
+            } else {
+                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+            }
         } else {
-            std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+            std::cout << "Cliente não encontrado." << std::endl;
         }
-    } else {
-        std::cout << "Produto não encontrado." << std::endl;
-    }
     }
 
-    void produtoAltera(ArvoreProdutos& arvoreProdutos) {
-    int cod;
+        void clienteAltera(ArvoreClientes& arvoreClientes) {
+            int cod;
 
-    cout << "Informe o codigo do produto a ser alterado: ";
-    cin >> cod;
+            cout << "Informe o codigo do cliente a ser alterado: ";
+            cin >> cod;
 
-    Produto* produto = arvoreProdutos.buscarProduto(cod);
+            Cliente* cliente = arvoreClientes.buscarCliente(cod);
 
-    if (produto->getCodigo() != -1) {
-        cout << "Produto encontrado:\n";
-        cout << "Codigo: " << produto->getCodigo() << endl;
-        cout << "Descricao atual: " << produto->getDescricao() << endl;
-        cout << "Estoque atual:" << produto->getQuantidadeEstoque() <<endl;
+            if (cliente->getcodigo() != -1) {
+                cout << "Produto encontrado:\n";
+                cout << "Codigo: " << cliente->getcodigo() << endl;
+                cout << "Nome: " << cliente->getnome() << endl;
+                cout << "Situacao:" << cliente->getcodinp() <<endl;
 
-        int operacao;
-        cout << "+====================+" << endl;
-        cout << "| MENU DE ALTERACAO  |" << endl;
-        cout << "+====================+" << endl;
-        cout << "| 1: DESCRICAO       |" << endl;
-        cout << "| 2: PRECO           |" << endl;
-        cout << "| 3: VALOR DE COMPRA |" << endl;
-        cout << "| 4: ESTOQUE         |" << endl;
-        cout << "| 5: ESTOQUE MINIMO  |" << endl;
-        cout << "| 6: SAIR            |" << endl;
-        cout << "+====================+" << endl;
-        cout << " Digite: ";
-        cin >> operacao;
+                int operacao;
+                cout << "+====================+" << endl;
+                cout << "| MENU DE ALTERACAO  |" << endl;
+                cout << "+====================+" << endl;
+                cout << "| 1: NOME            |" << endl;
+                cout << "| 2: ENDERECO        |" << endl;
+                cout << "| 3: CPF             |" << endl;
+                cout << "| 4: TELEFONE        |" << endl;
+                cout << "| 5: INADINPLENCIA   |" << endl;
+                cout << "| 6: SAIR            |" << endl;
+                cout << "+====================+" << endl;
+                cout << " Digite: ";
+                cin >> operacao;
 
-        switch(operacao){
-        case 1:{
-            cout << "Digite a nova descricao do produto: ";
-            string novaDescricao;
-            cin >> novaDescricao;
-            produto->setDescricao(novaDescricao);
-            std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
-            if (arquivo.is_open()) {
-                arvoreProdutos.salvarRecursivamente(arvoreProdutos.raiz, arquivo);
-                arquivo.close();
+                switch(operacao){
+                case 1:{
+                    cout << "Digite o novo nome do cliente: ";
+                    string novoNome;
+                    cin >> novoNome;
+                    cliente->setnome(novoNome);
+                    std::ofstream arquivo("cliente.txt", std::ios::out | std::ios::trunc);
+                    if (arquivo.is_open()) {
+                        arvoreClientes.salvarRecursivamente(arvoreClientes.raiz, arquivo);
+                        arquivo.close();
+                    } else {
+                        std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+                    }
+
+                    break;
+                }
+
+                case 2:{
+                    cout << "Digite o novo endereco do cliente: ";
+                    string novoEndereco;
+                    cin >> novoEndereco;
+                    cliente->setendereco(novoEndereco);
+                    std::ofstream arquivo("cliente.txt", std::ios::out | std::ios::trunc);
+                    if (arquivo.is_open()) {
+                        arvoreClientes.salvarRecursivamente(arvoreClientes.raiz, arquivo);
+                        arquivo.close();
+                    } else {
+                        std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+                    }
+
+                    break;
+                }
+                case 3:{
+                    cout << "Digite o novo CPF do cliente: ";
+                    string novoCpf;
+                    cin >> novoCpf;
+                    cliente->setnome(novoCpf);
+                    std::ofstream arquivo("cliente.txt", std::ios::out | std::ios::trunc);
+                    if (arquivo.is_open()) {
+                        arvoreClientes.salvarRecursivamente(arvoreClientes.raiz, arquivo);
+                        arquivo.close();
+                    } else {
+                        std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+                    }
+
+                    break;
+
+                    break;
+                }
+
+                case 4:{
+                    cout << "Digite o novo numero do cliente: ";
+                    string novoTel;
+                    cin >> novoTel;
+                    cliente->setnome(novoTel);
+                    std::ofstream arquivo("cliente.txt", std::ios::out | std::ios::trunc);
+                    if (arquivo.is_open()) {
+                        arvoreClientes.salvarRecursivamente(arvoreClientes.raiz, arquivo);
+                        arquivo.close();
+                    } else {
+                        std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+                    }
+
+                    break;
+                }
+
+                case 5:{
+                    cout << "Digite (0) se o cliente possui divida ou (1) caso nao: ";
+                    bool novoCodInp;
+                    int aux;
+                    cin >>aux;
+
+                    if(aux = 1){
+                        novoCodInp = false;
+                    } else if(aux = 0){
+                        novoCodInp = true;
+                    }
+
+                    cliente->setcodinp(novoCodInp);
+                    std::ofstream arquivo("cliente.txt", std::ios::out | std::ios::trunc);
+                    if (arquivo.is_open()) {
+                        arvoreClientes.salvarRecursivamente(arvoreClientes.raiz, arquivo);
+                        arquivo.close();
+                    } else {
+                        std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+                    }
+
+                    break;
+                    break;
+                }
+
+                case 6:
+                    break;
+                }
+                cout << "Produto alterado com sucesso!\n";
             } else {
-                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
+                cout << "Produto nao encontrado!\n";
             }
-
-            break;
         }
-
-        case 2:{
-            cout << "Digite o novo preco do produto: ";
-            float novoValorVenda;
-            cin >> novoValorVenda;
-            produto->setValorVenda(novoValorVenda);
-            std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
-            if (arquivo.is_open()) {
-                arvoreProdutos.salvarRecursivamente(arvoreProdutos.raiz, arquivo);
-                arquivo.close();
-            } else {
-                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
-            }
-            break;
-        }
-        case 3:{
-            cout << "Digite o novo valor de compra do produto: ";
-            float novoValorCompra;
-            cin >> novoValorCompra;
-            produto->setValorCompra(novoValorCompra);
-            std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
-            if (arquivo.is_open()) {
-                arvoreProdutos.salvarRecursivamente(arvoreProdutos.raiz, arquivo);
-                arquivo.close();
-            } else {
-                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
-            }
-
-            break;
-        }
-
-        case 4:{
-            cout << "Digite a nova quantidade em estoque do produto: ";
-            int novoQuantidadeEstoque;
-            cin >> novoQuantidadeEstoque;
-            produto->setQuantidadeEstoque(novoQuantidadeEstoque);
-            std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
-            if (arquivo.is_open()) {
-                arvoreProdutos.salvarRecursivamente(arvoreProdutos.raiz, arquivo);
-                arquivo.close();
-            } else {
-                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
-            }
-            break;
-        }
-
-        case 5:{
-            cout << "Digite a nova quantidade minima em estoque do produto: ";
-            int novoQuantidadeMinima;
-            cin >> novoQuantidadeMinima;
-            produto->setQuantidadeMinima(novoQuantidadeMinima);
-            std::ofstream arquivo("produto.txt", std::ios::out | std::ios::trunc);
-            if (arquivo.is_open()) {
-                arvoreProdutos.salvarRecursivamente(arvoreProdutos.raiz, arquivo);
-                arquivo.close();
-            } else {
-                std::cout << "Não foi possível abrir o arquivo para escrita." << std::endl;
-            }
-            break;
-        }
-
-        case 6:
-            break;
-        }
-        cout << "Produto alterado com sucesso!\n";
-    } else {
-        cout << "Produto nao encontrado!\n";
-    }
-}
 
 };
 
-void Produto::adicionarNaArvore(ArvoreProdutos& arvore){
-    Produto* novoProduto = new Produto(*this);
-    arvore.cadastrarProduto(novoProduto);
+void Cliente::adicionarNaArvore(ArvoreClientes& arvore){
+    Cliente* novoCliente = new Cliente(*this);
+    arvore.cadastrarCliente(novoCliente);
 }
 
-void carregarArquivoParaArvore(ArvoreProdutos& arvoreProdutos, const std::string& nomeArquivo){
+void carregarArquivoParaArvore(ArvoreClientes& arvoreClientes, const std::string& nomeArquivo){
     std::ifstream arquivo(nomeArquivo, ios::binary);
 
     if (arquivo.is_open()){
-        int codigo;
-        std::string descricao;
-        float valorCompra, valorVenda;
-        int quantidadeMinima, quantidadeEstoque;
+       std ::string tel, endereco, nome, cpf;
+        int codCl;
+        bool codInp;
 
-        while (arquivo >> codigo >> descricao >> valorCompra >> valorVenda >> quantidadeMinima >> quantidadeEstoque){
+        while (arquivo >> codCl >> codInp >> nome >>  cpf >> tel >> endereco){
             // Criar um novo produto com as informações lidas do arquivo
-            Produto* novoProduto = new Produto(codigo, descricao, valorCompra, valorVenda, quantidadeMinima, quantidadeEstoque);
+            Cliente* novoCliente = new Cliente(codCl, codInp, nome, cpf, tel, endereco);
 
             // Adicionar o produto à árvore
-            arvoreProdutos.cadastrarProduto(novoProduto);
+            arvoreClientes.cadastrarCliente(novoCliente);
         }
 
         arquivo.close();
@@ -319,7 +330,7 @@ void carregarArquivoParaArvore(ArvoreProdutos& arvoreProdutos, const std::string
     }
 }
 
-void consultarProduto(ArvoreProdutos& arvore){
+void consultarCliente(ArvoreClientes& arvore){
     // Solicitar o código ao usuário
     int codigoConsulta;
     cout << "Digite o código do produto a ser consultado: ";
@@ -330,23 +341,28 @@ void consultarProduto(ArvoreProdutos& arvore){
     }
 
     // Buscar o produto na árvore
-    Produto* produtoEncontrado = arvore.buscarProduto(codigoConsulta);
+    Cliente* clienteEncontrado = arvore.buscarCliente(codigoConsulta);
 
     // Verificar se o produto foi encontrado
-    if (produtoEncontrado != nullptr){
+    if (clienteEncontrado != nullptr){
         // Exibir informações do produto
-        cout << "Informações do Produto:\n";
-        cout << "Código: " << produtoEncontrado->getCodigo() << "\n";
-        cout << "Descrição: " << produtoEncontrado->getDescricao() << "\n";
-        cout << "Valor de Compra: " << produtoEncontrado->getValorCompra() << "\n";
-        cout << "Valor de Venda: " << produtoEncontrado->getValorVenda() << "\n";
-        cout << "Quantidade Mínima: " << produtoEncontrado->getQuantidadeMinima() << "\n";
-        cout << "Quantidade em Estoque: " << produtoEncontrado->getQuantidadeEstoque() << "\n";
+        cout << "Informações do Cliente:\n";
+        cout << "Código: " << clienteEncontrado->getcodigo() << "\n";
+        cout << "Nome: " << clienteEncontrado->getnome() << "\n";
+        cout << "Cpf: " << clienteEncontrado->getcpf() << "\n";
+        cout << "Telefone: " << clienteEncontrado->gettel() << "\n";
+        cout << "Endereco: " << clienteEncontrado->getendereco() << "\n";
+
+        cout << "Condicao de venda a prazo: ";
+        if(clienteEncontrado->getcodinp()!=0)
+        cout<<"endividado\n";
+        else
+        cout<<"nao endividado\n";
+
+
     }else{
-        cerr << "Produto não encontrado.\n";
+        cerr << "Cliente não encontrado.\n";
     }
 }
 
-
-
-#endif // PRODUTO_H_INCLUDED
+#endif // CLIENTE_H_INCLUDED
